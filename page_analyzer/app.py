@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from page_analyzer.config import get_database_url, get_secret_key, load_env
 
 load_env()
@@ -12,4 +12,4 @@ app.config["DATABASE_URL"] = get_database_url()
 
 @app.get("/")
 def index():
-    return "Page Analyzer is running!"
+    return render_template("index.html")

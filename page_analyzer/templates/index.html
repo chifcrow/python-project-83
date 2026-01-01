@@ -1,0 +1,31 @@
+{% extends "base.html" %} {% block title %}Page Analyzer{% endblock %} {% block
+content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-8">
+    <div class="p-5 mb-4 bg-white border rounded-3 shadow-sm">
+      <h1 class="display-5 fw-bold">Page Analyzer</h1>
+      <p class="lead text-secondary mb-4">
+        Check web pages for SEO suitability.
+      </p>
+
+      <form action="#" method="get">
+        <div class="mb-3">
+          <label for="url" class="form-label">URL</label>
+          <div class="input-group input-group-lg">
+            <input
+              type="url"
+              class="form-control"
+              id="url"
+              name="url"
+              placeholder="https://www.example.com"
+              aria-label="URL"
+              required
+            />
+            <button type="submit" class="btn btn-primary">Check</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
