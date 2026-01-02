@@ -4,7 +4,7 @@ services:
     runtime: python
     plan: free
     branch: main
-    buildCommand: make install
+    buildCommand: ./build.sh
     startCommand: .venv/bin/gunicorn page_analyzer:app --bind 0.0.0.0:$PORT
     envVars:
       - key: FLASK_ENV
