@@ -9,6 +9,9 @@ Requires-Dist: gunicorn>=21.2.0
 Requires-Dist: python-dotenv>=1.0.0
 Requires-Dist: psycopg2-binary>=2.9.9
 Requires-Dist: validators>=0.24.0
+Requires-Dist: requests>=2.32.0
+Requires-Dist: beautifulsoup4>=4.12.3
+Requires-Dist: lxml>=5.2.2
 
 ### Hexlet tests and linter status:
 [![Actions Status](https://github.com/chifcrow/python-project-83/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/chifcrow/python-project-83/actions)

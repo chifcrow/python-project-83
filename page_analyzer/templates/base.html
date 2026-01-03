@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{% block title %}Page Analyzer{% endblock %}</title>
+    <title>{% block title %}Анализатор страниц{% endblock %}</title>
 
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
@@ -13,13 +13,22 @@
     />
   </head>
   <body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
-        <a class="navbar-brand fw-semibold" href="{{ url_for('index') }}"
-          >Page Analyzer</a
-        >
-        <div class="navbar-nav">
-          <a class="nav-link" href="{{ url_for('urls_index') }}">URLs</a>
+        <div class="d-flex align-items-center gap-3">
+          <a
+            class="navbar-brand fw-semibold mb-0"
+            href="{{ url_for('index') }}"
+          >
+            Анализатор страниц
+          </a>
+
+          <a
+            class="nav-link text-white fw-semibold p-0"
+            href="{{ url_for('urls_index') }}"
+          >
+            Сайты
+          </a>
         </div>
       </div>
     </nav>

@@ -35,7 +35,6 @@ def is_valid_url(raw_url: str) -> bool:
         return False
     if not validators.url(raw_url):
         return False
-
     parsed = urlparse(raw_url)
     return bool(parsed.scheme and parsed.netloc)
 
@@ -87,16 +86,16 @@ def urls_create():
     url_value = request.form.get("url", "").strip()
 
     if not is_valid_url(url_value):
-        flash("Invalid URL", "danger")
-        return render_index(url_value, "Invalid URL", 422)
+        flash("Некорректный URL", "danger")
+        return render_index(url_value, "Некорректный URL", 422)
 
     normalized = normalize_url(url_value)
 
     try:
         conn = get_db_connection()
     except Exception:
-        flash("Database connection error", "danger")
-        return render_index(url_value, "Database connection error", 500)
+        flash("Ошибка базы данных", "danger")
+        return render_index(url_value, "Ошибка базы данных", 500)
 
     try:
         with conn.cursor() as cur:
@@ -106,7 +105,7 @@ def urls_create():
             )
             existing = fetch_one(cur)
             if existing:
-                flash("URL already exists", "info")
+                flash("Страница уже существует", "info")
                 return redirect(url_for("url_show", id=existing["id"]))
 
             created_at = datetime.utcnow()
@@ -119,15 +118,15 @@ def urls_create():
             new_row = fetch_one(cur)
             conn.commit()
 
-        flash("URL has been added", "success")
+        flash("Страница успешно добавлена", "success")
         return redirect(url_for("url_show", id=new_row["id"]))
     except psycopg2.Error:
         try:
             conn.rollback()
         except Exception:
             pass
-        flash("Database error", "danger")
-        return render_index(url_value, "Database error", 500)
+        flash("Ошибка базы данных", "danger")
+        return render_index(url_value, "Ошибка базы данных", 500)
     finally:
         conn.close()
 
@@ -137,7 +136,7 @@ def url_checks_create(id: int):
     try:
         conn = get_db_connection()
     except Exception:
-        flash("Database connection error", "danger")
+        flash("Ошибка базы данных", "danger")
         return redirect(url_for("urls_index"))
 
     try:
@@ -148,7 +147,7 @@ def url_checks_create(id: int):
             )
             url_row = fetch_one(cur)
             if not url_row:
-                flash("URL not found", "danger")
+                flash("Сайт не найден", "danger")
                 return redirect(url_for("urls_index"))
 
             url_name = url_row["name"]
@@ -173,14 +172,14 @@ def url_checks_create(id: int):
             )
             conn.commit()
 
-        flash("URL has been checked", "success")
+        flash("Страница успешно проверена", "success")
         return redirect(url_for("url_show", id=id))
     except psycopg2.Error:
         try:
             conn.rollback()
         except Exception:
             pass
-        flash("Database error", "danger")
+        flash("Ошибка базы данных", "danger")
         return redirect(url_for("url_show", id=id))
     finally:
         conn.close()
@@ -191,7 +190,7 @@ def urls_index():
     try:
         conn = get_db_connection()
     except Exception:
-        flash("Database connection error", "danger")
+        flash("Ошибка базы данных", "danger")
         return render_template("urls.html", urls=[]), 500
 
     try:
@@ -225,7 +224,7 @@ def url_show(id: int):
     try:
         conn = get_db_connection()
     except Exception:
-        flash("Database connection error", "danger")
+        flash("Ошибка базы данных", "danger")
         return redirect(url_for("urls_index"))
 
     try:
@@ -239,7 +238,7 @@ def url_show(id: int):
             url_row = fetch_one(cur)
 
             if not url_row:
-                flash("URL not found", "danger")
+                flash("Сайт не найден", "danger")
                 return redirect(url_for("urls_index"))
 
             cur.execute(
