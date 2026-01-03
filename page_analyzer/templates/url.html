@@ -39,6 +39,9 @@
       <tr>
         <th scope="col">ID</th>
         <th scope="col">Status code</th>
+        <th scope="col">H1</th>
+        <th scope="col">Title</th>
+        <th scope="col">Description</th>
         <th scope="col">Created at</th>
       </tr>
     </thead>
@@ -47,6 +50,9 @@
       <tr>
         <td>{{ check.id }}</td>
         <td>{{ check.status_code or "" }}</td>
+        <td>{{ check.h1 or "" }}</td>
+        <td>{{ check.title or "" }}</td>
+        <td>{{ check.description or "" }}</td>
         <td>{{ check.created_at }}</td>
       </tr>
       {% endfor %}

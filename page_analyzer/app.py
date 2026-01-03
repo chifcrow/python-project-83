@@ -1,13 +1,11 @@
 from __future__ import annotations
-
 from datetime import datetime
 from urllib.parse import urlparse
-
 import psycopg2
 import requests
 import validators
+from bs4 import BeautifulSoup
 from flask import Flask, flash, redirect, render_template, request, url_for
-
 from page_analyzer.config import get_database_url, get_secret_key, load_env
 from page_analyzer.db import fetch_all, fetch_one, get_db_connection, init_db
 
@@ -47,6 +45,36 @@ def render_index(url_value: str, error: str | None, status_code: int = 200):
         render_template("index.html", url_value=url_value, error=error),
         status_code,
     )
+
+
+def extract_seo_fields(html: str) -> tuple[str | None, str | None, str | None]:
+    """
+    Extract SEO fields from HTML:
+    - h1 text
+    - title text
+    - meta description content
+
+    Returns: (h1, title, description)
+    """
+    if not html:
+        return None, None, None
+
+    try:
+        soup = BeautifulSoup(html, "lxml")
+
+        h1_tag = soup.find("h1")
+        h1 = h1_tag.get_text(strip=True) if h1_tag else None
+
+        title_tag = soup.find("title")
+        title = title_tag.get_text(strip=True) if title_tag else None
+
+        meta_desc = soup.find("meta", attrs={"name": "description"})
+        desc_raw = meta_desc.get("content") if meta_desc else None
+        description = desc_raw.strip() if desc_raw else None
+
+        return h1 or None, title or None, description or None
+    except Exception:
+        return None, None, None
 
 
 @app.get("/")
@@ -133,13 +161,15 @@ def url_checks_create(id: int):
             return redirect(url_for("url_show", id=id))
 
         status_code = response.status_code
+        h1, title, description = extract_seo_fields(response.text)
         created_at = datetime.utcnow()
 
         with conn.cursor() as cur:
             cur.execute(
-                "INSERT INTO url_checks (url_id, status_code, created_at) "
-                "VALUES (%s, %s, %s);",
-                (id, status_code, created_at),
+                "INSERT INTO url_checks "
+                "(url_id, status_code, h1, title, description, created_at) "
+                "VALUES (%s, %s, %s, %s, %s, %s);",
+                (id, status_code, h1, title, description, created_at),
             )
             conn.commit()
 
@@ -213,7 +243,7 @@ def url_show(id: int):
                 return redirect(url_for("urls_index"))
 
             cur.execute(
-                "SELECT id, status_code, created_at "
+                "SELECT id, status_code, h1, title, description, created_at "
                 "FROM url_checks "
                 "WHERE url_id = %s "
                 "ORDER BY id DESC;",
