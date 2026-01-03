@@ -8,3 +8,4 @@ hexlet_code.egg-info/top_level.txt
 page_analyzer/__init__.py
 page_analyzer/app.py
 page_analyzer/config.py
+page_analyzer/db.py

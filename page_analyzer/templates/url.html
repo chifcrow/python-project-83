@@ -1,0 +1,22 @@
+{% extends "base.html" %} {% block title %}URL{% endblock %} {% block content %}
+<h1 class="mb-4">URL</h1>
+
+<div class="table-responsive">
+  <table class="table table-bordered align-middle" data-test="url">
+    <tbody>
+      <tr>
+        <th scope="row" class="w-25">ID</th>
+        <td>{{ url.id }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Name</th>
+        <td>{{ url.name }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Created at</th>
+        <td>{{ url.created_at }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+{% endblock %}

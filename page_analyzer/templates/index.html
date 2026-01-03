@@ -2,26 +2,28 @@
 content %}
 <div class="row justify-content-center">
   <div class="col-12 col-lg-8">
-    <div class="p-5 mb-4 bg-white border rounded-3 shadow-sm">
-      <h1 class="display-5 fw-bold">Page Analyzer</h1>
+    <div class="p-5 bg-white border rounded-3 shadow-sm">
+      <h1 class="display-5 fw-bold mb-3">Page Analyzer</h1>
       <p class="lead text-secondary mb-4">
-        Check web pages for SEO suitability.
+        Check web pages for SEO suitability
       </p>
 
-      <form action="#" method="get">
+      <form action="{{ url_for('urls_create') }}" method="post" novalidate>
         <div class="mb-3">
           <label for="url" class="form-label">URL</label>
           <div class="input-group input-group-lg">
             <input
-              type="url"
-              class="form-control"
+              type="text"
+              class="form-control {% if error %}is-invalid{% endif %}"
               id="url"
               name="url"
               placeholder="https://www.example.com"
-              aria-label="URL"
-              required
+              value="{{ url_value }}"
             />
             <button type="submit" class="btn btn-primary">Check</button>
+            {% if error %}
+            <div class="invalid-feedback">{{ error }}</div>
+            {% endif %}
           </div>
         </div>
       </form>

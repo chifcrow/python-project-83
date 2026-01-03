@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{% block title %}Page Analyzer{% endblock %}</title>
 
-    <!-- Bootstrap 5 via CDN (official snippet) -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -14,20 +13,28 @@
     />
   </head>
   <body class="bg-light">
-    <header class="border-bottom bg-white">
-      <div class="container py-3">
-        <a
-          class="navbar-brand fw-semibold text-dark text-decoration-none"
-          href="/"
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+      <div class="container">
+        <a class="navbar-brand fw-semibold" href="{{ url_for('index') }}"
+          >Page Analyzer</a
         >
-          Page Analyzer
-        </a>
+        <div class="navbar-nav">
+          <a class="nav-link" href="{{ url_for('urls_index') }}">URLs</a>
+        </div>
       </div>
-    </header>
+    </nav>
 
-    <main class="container py-5">{% block content %}{% endblock %}</main>
+    <main class="container py-5">
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %}
+      <div class="mb-4">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %} {% endwith %} {% block content %}{% endblock %}
+    </main>
 
-    <!-- Bootstrap JS bundle via CDN (official snippet) -->
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
