@@ -38,6 +38,7 @@
     <thead>
       <tr>
         <th scope="col">ID</th>
+        <th scope="col">Status code</th>
         <th scope="col">Created at</th>
       </tr>
     </thead>
@@ -45,6 +46,7 @@
       {% for check in checks %}
       <tr>
         <td>{{ check.id }}</td>
+        <td>{{ check.status_code or "" }}</td>
         <td>{{ check.created_at }}</td>
       </tr>
       {% endfor %}

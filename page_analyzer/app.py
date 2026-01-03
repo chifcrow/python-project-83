@@ -1,9 +1,13 @@
 from __future__ import annotations
+
 from datetime import datetime
 from urllib.parse import urlparse
+
 import psycopg2
+import requests
 import validators
 from flask import Flask, flash, redirect, render_template, request, url_for
+
 from page_analyzer.config import get_database_url, get_secret_key, load_env
 from page_analyzer.db import fetch_all, fetch_one, get_db_connection, init_db
 
@@ -111,7 +115,7 @@ def url_checks_create(id: int):
     try:
         with conn.cursor() as cur:
             cur.execute(
-                "SELECT id FROM urls WHERE id = %s;",
+                "SELECT id, name FROM urls WHERE id = %s;",
                 (id,),
             )
             url_row = fetch_one(cur)
@@ -119,10 +123,23 @@ def url_checks_create(id: int):
                 flash("URL not found", "danger")
                 return redirect(url_for("urls_index"))
 
-            created_at = datetime.utcnow()
+            url_name = url_row["name"]
+
+        try:
+            response = requests.get(url_name, timeout=5)
+            response.raise_for_status()
+        except requests.RequestException:
+            flash("Произошла ошибка при проверке", "danger")
+            return redirect(url_for("url_show", id=id))
+
+        status_code = response.status_code
+        created_at = datetime.utcnow()
+
+        with conn.cursor() as cur:
             cur.execute(
-                "INSERT INTO url_checks (url_id, created_at) VALUES (%s, %s);",
-                (id, created_at),
+                "INSERT INTO url_checks (url_id, status_code, created_at) "
+                "VALUES (%s, %s, %s);",
+                (id, status_code, created_at),
             )
             conn.commit()
 
@@ -154,11 +171,16 @@ def urls_index():
                 "  u.id, "
                 "  u.name, "
                 "  u.created_at, "
-                "  MAX(c.created_at) AS last_check "
+                "  lc.created_at AS last_check, "
+                "  lc.status_code AS last_status_code "
                 "FROM urls AS u "
-                "LEFT JOIN url_checks AS c "
-                "  ON c.url_id = u.id "
-                "GROUP BY u.id "
+                "LEFT JOIN LATERAL ( "
+                "  SELECT created_at, status_code "
+                "  FROM url_checks "
+                "  WHERE url_id = u.id "
+                "  ORDER BY id DESC "
+                "  LIMIT 1 "
+                ") AS lc ON TRUE "
                 "ORDER BY u.id DESC;"
             )
             urls = fetch_all(cur)
@@ -191,7 +213,7 @@ def url_show(id: int):
                 return redirect(url_for("urls_index"))
 
             cur.execute(
-                "SELECT id, created_at "
+                "SELECT id, status_code, created_at "
                 "FROM url_checks "
                 "WHERE url_id = %s "
                 "ORDER BY id DESC;",
