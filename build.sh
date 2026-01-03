@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-# Build script for Render deployment.
-# - Installs dependencies
-# - Applies database schema to PostgreSQL using DATABASE_URL and database.sql
-
 set -euo pipefail
+
+# Always run from the directory where this script is located (repo root)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
+echo "Working directory: $(pwd)"
+echo "Listing files in repo root:"
+ls -la
 
 # Install PostgreSQL client if it's missing (psql is required for schema apply)
 if ! command -v psql >/dev/null 2>&1; then
@@ -16,10 +20,15 @@ fi
 make install
 
 # Apply schema to the database
-# DATABASE_URL must be provided by the platform (Render) as an environment variable
 if [ -z "${DATABASE_URL:-}" ]; then
   echo "ERROR: DATABASE_URL is not set"
   exit 1
 fi
 
-psql -a -d "$DATABASE_URL" -f database.sql
+SQL_FILE="$SCRIPT_DIR/database.sql"
+if [ ! -f "$SQL_FILE" ]; then
+  echo "ERROR: SQL file not found at $SQL_FILE"
+  exit 1
+fi
+
+psql -a -d "$DATABASE_URL" -f "$SQL_FILE"
