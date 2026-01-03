@@ -1,7 +1,16 @@
 {% extends "base.html" %} {% block title %}URL{% endblock %} {% block content %}
-<h1 class="mb-4">URL</h1>
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <h1 class="mb-0">URL</h1>
+  <form
+    action="{{ url_for('url_checks_create', id=url.id) }}"
+    method="post"
+    class="m-0"
+  >
+    <button type="submit" class="btn btn-primary">Check</button>
+  </form>
+</div>
 
-<div class="table-responsive">
+<div class="table-responsive mb-4">
   <table class="table table-bordered align-middle" data-test="url">
     <tbody>
       <tr>
@@ -16,6 +25,29 @@
         <th scope="row">Created at</th>
         <td>{{ url.created_at }}</td>
       </tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 class="h4 mb-3">Checks</h2>
+<div class="table-responsive">
+  <table
+    class="table table-striped table-bordered align-middle"
+    data-test="checks"
+  >
+    <thead>
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Created at</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for check in checks %}
+      <tr>
+        <td>{{ check.id }}</td>
+        <td>{{ check.created_at }}</td>
+      </tr>
+      {% endfor %}
     </tbody>
   </table>
 </div>
