@@ -4,7 +4,7 @@
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)](https://www.python.org/)
 [![Hexlet](https://img.shields.io/badge/Hexlet-educational-blueviolet)](https://hexlet.io)
 
-### Hexlet tests and linter status:
+### Статус тестов и линтера Hexlet:
 [![Actions Status](https://github.com/chifcrow/python-project-83/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/chifcrow/python-project-83/actions)
 
 **Анализатор страниц** — учебный веб-проект на Flask, реализованный в рамках курса Hexlet.  
