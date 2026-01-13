@@ -1,0 +1,9 @@
+line-length = 80
+
+[lint.per-file-ignores]
+# __init__ modules can contain local imports and unused imports
+"__init__.py" = ["F401"]
+
+[lint]
+preview = true
+select = ["E", "F", "I", "C90"]

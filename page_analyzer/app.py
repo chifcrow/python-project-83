@@ -1,11 +1,16 @@
+# page_analyzer/app.py
+
 from __future__ import annotations
+
 from datetime import datetime
 from urllib.parse import urlparse
+
 import psycopg2
 import requests
 import validators
 from bs4 import BeautifulSoup
 from flask import Flask, flash, redirect, render_template, request, url_for
+
 from page_analyzer.config import get_database_url, get_secret_key, load_env
 from page_analyzer.db import fetch_all, fetch_one, get_db_connection, init_db
 
@@ -41,20 +46,16 @@ def is_valid_url(raw_url: str) -> bool:
 
 def render_index(url_value: str, error: str | None, status_code: int = 200):
     return (
-        render_template("index.html", url_value=url_value, error=error),
+        render_template(
+            "index.html",
+            url_value=url_value,
+            error=error,
+        ),
         status_code,
     )
 
 
 def extract_seo_fields(html: str) -> tuple[str | None, str | None, str | None]:
-    """
-    Extract SEO fields from HTML:
-    - h1 text
-    - title text
-    - meta description content
-
-    Returns: (h1, title, description)
-    """
     if not html:
         return None, None, None
 
@@ -110,9 +111,11 @@ def urls_create():
 
             created_at = datetime.utcnow()
             cur.execute(
-                "INSERT INTO urls (name, created_at) "
-                "VALUES (%s, %s) "
-                "RETURNING id;",
+                (
+                    "INSERT INTO urls (name, created_at) "
+                    "VALUES (%s, %s) "
+                    "RETURNING id;"
+                ),
                 (normalized, created_at),
             )
             new_row = fetch_one(cur)
@@ -165,9 +168,12 @@ def url_checks_create(id: int):
 
         with conn.cursor() as cur:
             cur.execute(
-                "INSERT INTO url_checks "
-                "(url_id, status_code, h1, title, description, created_at) "
-                "VALUES (%s, %s, %s, %s, %s, %s);",
+                (
+                    "INSERT INTO url_checks "
+                    "(url_id, status_code, h1, title, "
+                    "description, created_at) "
+                    "VALUES (%s, %s, %s, %s, %s, %s);"
+                ),
                 (id, status_code, h1, title, description, created_at),
             )
             conn.commit()
@@ -196,21 +202,23 @@ def urls_index():
     try:
         with conn.cursor() as cur:
             cur.execute(
-                "SELECT "
-                "  u.id, "
-                "  u.name, "
-                "  u.created_at, "
-                "  lc.created_at AS last_check, "
-                "  lc.status_code AS last_status_code "
-                "FROM urls AS u "
-                "LEFT JOIN LATERAL ( "
-                "  SELECT created_at, status_code "
-                "  FROM url_checks "
-                "  WHERE url_id = u.id "
-                "  ORDER BY id DESC "
-                "  LIMIT 1 "
-                ") AS lc ON TRUE "
-                "ORDER BY u.id DESC;"
+                (
+                    "SELECT "
+                    "  u.id, "
+                    "  u.name, "
+                    "  u.created_at, "
+                    "  lc.created_at AS last_check, "
+                    "  lc.status_code AS last_status_code "
+                    "FROM urls AS u "
+                    "LEFT JOIN LATERAL ( "
+                    "  SELECT created_at, status_code "
+                    "  FROM url_checks "
+                    "  WHERE url_id = u.id "
+                    "  ORDER BY id DESC "
+                    "  LIMIT 1 "
+                    ") AS lc ON TRUE "
+                    "ORDER BY u.id DESC;"
+                )
             )
             urls = fetch_all(cur)
 
@@ -230,9 +238,11 @@ def url_show(id: int):
     try:
         with conn.cursor() as cur:
             cur.execute(
-                "SELECT id, name, created_at "
-                "FROM urls "
-                "WHERE id = %s;",
+                (
+                    "SELECT id, name, created_at "
+                    "FROM urls "
+                    "WHERE id = %s;"
+                ),
                 (id,),
             )
             url_row = fetch_one(cur)
@@ -242,10 +252,13 @@ def url_show(id: int):
                 return redirect(url_for("urls_index"))
 
             cur.execute(
-                "SELECT id, status_code, h1, title, description, created_at "
-                "FROM url_checks "
-                "WHERE url_id = %s "
-                "ORDER BY id DESC;",
+                (
+                    "SELECT id, status_code, h1, "
+                    "title, description, created_at "
+                    "FROM url_checks "
+                    "WHERE url_id = %s "
+                    "ORDER BY id DESC;"
+                ),
                 (id,),
             )
             checks = fetch_all(cur)
